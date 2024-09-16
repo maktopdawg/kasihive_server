@@ -1,0 +1,3 @@
+MongoDBPassword = zeK8Tlmt9BsxhGyh
+
+Connection URL = mongodb+srv://codeclinics2024:zeK8Tlmt9BsxhGyh@kasihive.lg8v2.mongodb.net/?retryWrites=true&w=majority&appName=kasihive
