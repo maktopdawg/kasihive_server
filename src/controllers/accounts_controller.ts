@@ -98,8 +98,25 @@ class AccountsController {
         
     }
 
-    static delete_business_account = (req: Request, res: Response) => {
-        
+    static delete_business_account = async (req: Request, res: Response) => {
+        // Just trying out the logic, I have no idea if this is correct or not lol
+        const { businessId } = req.params;
+
+        if ( !businessId ) {
+            return res.status(400).json({ message: "Business ID is required."});
+        }
+
+        try {
+            const deletedBusiness = await BusinessAccount.findByIdAndDelete(businessId);
+
+            if (!deletedBusiness) {
+                return res.status(404).json({ message: `Business account with ID ${businessId} was not found.`})
+            }
+
+            return res.status(200).json({ message: "Business account successfully deleted."})
+        } catch (error: any) {
+            return res.status(500).json({ "": error.message, message : "We are having trouble communicationg with the server. Please try again." })
+        }
     }
 
     static update_investor_account = (req: Request, res: Response) => {
