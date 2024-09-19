@@ -3,6 +3,7 @@ import * as jwt from "jsonwebtoken";
 import InvestorAccount from "../models/investor_account";
 import bcrypt from "bcrypt"
 import BusinessAccount from "../models/business_account";
+import { isValidID } from "../utils/validationUtils";
 
 interface InvestorSignupProps {
     firstName: string
@@ -15,8 +16,8 @@ interface InvestorSignupProps {
 
 interface BusinessSignupProps {
     businessName: string
-    industry: string
-    description: string
+    ownerName: string
+    ownerIDNumber: string
     email: string
     contactNumber: string
     password: string
@@ -60,32 +61,36 @@ class AccountsController {
     }
 
     static create_business_account = async (req: Request, res: Response) => {
-        const { businessName, industry, description, email, contactNumber, password }: BusinessSignupProps = req.body;
+        const { businessName, ownerName, ownerIDNumber, email, contactNumber, password }: BusinessSignupProps = req.body;
 
-        if ( !businessName || !industry || !description || !email || !contactNumber || !password ) {
-            return res.status(200).json({ message: "All fields are required." })
+        if ( !businessName || !ownerName || !ownerIDNumber || !email || !contactNumber || !password ) {
+            return res.status(200).json({ message: "All fields are required."})
         }
-
-        const duplicateEmail = await BusinessAccount.findOne({ email }).exec();
         
-        if (duplicateEmail) return res.status(409).json({ message: `Business with email; ${email} already exists.`});
+        const duplicateID = await BusinessAccount.findOne({ ownerIDNumber : ownerIDNumber }).exec();
 
-        const duplicateContactNumber = await BusinessAccount.findOne({ contactNumber }).exec();
+        if (duplicateID) return res.status(409).json({ message: `Account With Id; ${ownerIDNumber} already exists.`});
+        if (!isValidID(ownerIDNumber)) return res.status(400).json({ message: "Invalid ID number entered." });
 
-        if (duplicateContactNumber) return res.status(409).json({ message: `Business with contact number; ${contactNumber} already exists.`});
+        const duplicateEmail = await BusinessAccount.findOne({ email: email}).exec();
+        if (duplicateEmail) return res.status(409).json({ message: `Account With email; ${email} already exists.`});
+
+        const duplicatePhone = await InvestorAccount.findOne({ contactNumber: contactNumber }).exec();
+        if (duplicatePhone) return res.status(409).json({ "message": `Account With cellphone number; ${contactNumber} already exists.` });
 
         try {
             const result = await BusinessAccount.create({
                 "businessName": businessName,
-                "industry": industry,
-                "description": description,
+                "ownerName": ownerName,
+                "ownerIDNumber": ownerIDNumber,
                 "email": email,
                 "contactNumber": contactNumber,
                 "password": await bcrypt.hash(password, 10)
             })
-            res.status(201).json({ message: `Business account successfully created for ${businessName}!`})
+
+            res.status(201).json({ message: `Business account has been successfully created for ${businessName}`})
         } catch (error: any) {
-            res.status(500).json({ "": error.message, "message": "We are having trouble communicating with the server. Please try again." })
+            res.status(500).json({ "": error.message, message : "We are having trouble communicationg with the server. Please try again." })
         }
     }
 

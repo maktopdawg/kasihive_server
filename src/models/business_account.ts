@@ -1,54 +1,52 @@
 import mongoose, { Schema, model} from "mongoose";
 import dotenv from "dotenv";
 
-dotenv.config;
+dotenv.config();
 
-const BusinessAccountSchema = new Schema ({
-    // Business Information
+const BusinessAccountSchema = new Schema({
     businessName: {
         type: String,
         required: true,
         trim: true
     },
-    industry: {
-        type: String,
-        required: true,
-    },
-    description: {
+    ownerName: {
         type: String,
         required: true,
         trim: true
     },
-
-    // Business Contact Informatino
+    ownerIDNumber: {
+        type: String,
+        required: true,
+        trim: true
+    },
     email: {
         type: String,
         required: true,
         unique: true,
         trim: true,
+        lowercase: true
     },
     contactNumber: {
         type: String,
-        requried: true,
+        required: true,
         unique: true,
         trim: true
     },
-    
     password: {
         type: String,
         required: true
     },
 
+
     walletBalance: {
         type: Number,
         default: 0.0
     },
-
-    investors: [
+    investmentsReceived: [
         {
             investorId: {
                 type: mongoose.Schema.ObjectId,
-                ref: "Investor"
+                ref: 'Investor'
             },
             investmentId: {
                 type: String,
@@ -61,24 +59,21 @@ const BusinessAccountSchema = new Schema ({
                 default: Date.now
             },
             status: {
-                enum: ['OPEN', 'CLOSED']
-            },
-            returnsPaid: {
-                type: Number,
-                default: 0.0
+                type: String,
+                enum: ['ACTIVE', 'COMPLETED'],
+                default: 'ACTIVE'
             }
         }
     ],
+    dateCreated: {
+        type: Date,
+        default: Date.now
+    },
+    accountStatus: {
+        type: String,
+        enum: ['ACTIVE', 'SUSPENDED', 'CLOSED'],
+        default: 'ACTIVE'
+    }
+});
 
-        dateCreated: {
-            type: Date,
-            default: Date.now
-        },
-        profileStatus: {
-            type: String,
-            enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED', 'CLOSED'],
-            default: 'ACTIVE'
-        }
-})
-    
 export default model('Business', BusinessAccountSchema);
