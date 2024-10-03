@@ -5,5 +5,6 @@ const router: Router = Router();
 
 router.post( "/accounts/new-investor-account", AccountsController.create_investor_account )
 router.post( "/accounts/new-business-account", AccountsController.create_business_account )
+router.post( "/business/delete/:businessId", AccountsController.delete_business_account )
 
 export default router;
