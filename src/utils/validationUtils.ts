@@ -28,3 +28,8 @@ export const isValidID = (idNumber: string): boolean => {
 
     return luhnCheck(idNumber);
 }
+
+
+export const generateUsername = (name: string, surname: string) => {
+    return `${name.toLowerCase().slice(0,3)}_${surname.toLowerCase().slice(0,3)}_${Math.floor(1000 + Math.random() * 9000)}`
+}

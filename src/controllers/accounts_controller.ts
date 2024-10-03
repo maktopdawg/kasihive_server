@@ -3,7 +3,7 @@ import * as jwt from "jsonwebtoken";
 import InvestorAccount from "../models/investor_account";
 import bcrypt from "bcrypt"
 import BusinessAccount from "../models/business_account";
-import { isValidID } from "../utils/validationUtils";
+import { generateUsername, isValidID } from "../utils/validationUtils";
 
 interface InvestorSignupProps {
     firstName: string
@@ -23,6 +23,12 @@ interface BusinessSignupProps {
     password: string
 }
 
+interface DeleteInvestorProps {
+    username: string
+    identityNumber: string
+    password: string
+}
+
 class AccountsController {
     static create_investor_account = async (req: Request, res: Response) => {
         const { firstName, lastName, identityNumber, email, phoneNumber, password }: InvestorSignupProps = req.body;
@@ -30,6 +36,8 @@ class AccountsController {
         if (!firstName || !lastName || !identityNumber || !email || !phoneNumber || !password ) {
             return res.status(200).json({ "message": "All fields are required." })
         }
+
+        if (!isValidID(identityNumber.toString())) return res.status(400).json({ "message": `ID number invalid` })
 
         const duplicateID = await InvestorAccount.findOne({ identityNumber: identityNumber }).exec();
 
@@ -47,7 +55,7 @@ class AccountsController {
             const result = await InvestorAccount.create({
                 "firstName": firstName,
                 "lastName": lastName,
-                "username": `${firstName}${identityNumber}`,
+                "username": generateUsername(firstName, lastName),
                 "identityNumber": identityNumber,
                 "email": email,
                 "phoneNumber": phoneNumber,
@@ -94,8 +102,23 @@ class AccountsController {
         }
     }
 
-    static delete_investor_account = (req: Request, res: Response) => {
+    static delete_investor_account = async (req: Request, res: Response) => {
+        const { username, identityNumber, password }: DeleteInvestorProps = req.body;
+
+        if (!username || !identityNumber || !password) res.status(200).json({ "message": "All fields are required." })
+
+        const account = await InvestorAccount.findOne({ username: username }).exec();
+
+        if (!account) return res.status(204).json({ "message": `Account with username ${username} not found.` })
         
+        if (account.identityNumber !== identityNumber) return res.status(401).json({ "message": "Incorrect ID." })
+
+        const validPassword = await bcrypt.compare(password, account.password)
+        if (!validPassword) return res.status(409).json({ "message": "Invalid Password." })
+
+        const result = await account.deleteOne({ _id: account._id });
+
+        return res.status(200).json({ "message": "Account successfully deleted." })
     }
 
     static delete_business_account = async (req: Request, res: Response) => {

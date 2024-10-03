@@ -9,4 +9,4 @@ class AuthController {
     static sign_out = (req: Request, res: Response) => {
         
     }
-}
+} 
