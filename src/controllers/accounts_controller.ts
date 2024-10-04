@@ -5,6 +5,19 @@ import bcrypt from "bcrypt"
 import BusinessAccount from "../models/business_account";
 import { generateUsername, isValidID } from "../utils/validationUtils";
 
+interface OwnerProps {
+    name: string
+    surname: string
+    idNumber: string
+}
+
+interface AddressProps {
+    street: string
+    city: string
+    province: string
+    postalCode: string
+}
+
 interface InvestorSignupProps {
     firstName: string
     lastName: string
@@ -16,16 +29,25 @@ interface InvestorSignupProps {
 
 interface BusinessSignupProps {
     businessName: string
-    ownerName: string
-    ownerIDNumber: string
-    email: string
-    contactNumber: string
+    registrationNumber: string
+    industry: string
     password: string
+    owners: OwnerProps[]
+    address: AddressProps
+    email: string
+    phoneNumber: string
+    websiteUrl: string
 }
 
 interface DeleteInvestorProps {
     username: string
     identityNumber: string
+    password: string
+}
+
+interface DeleteBusinessProps {
+    businessName: string
+    registrationNumber: string
     password: string
 }
 
@@ -73,33 +95,32 @@ class AccountsController {
     }
 
     static create_business_account = async (req: Request, res: Response) => {
-        const { businessName, ownerName, ownerIDNumber, email, contactNumber, password }: BusinessSignupProps = req.body;
+        const { businessName, registrationNumber, industry, password, owners, address, email, phoneNumber, websiteUrl }: BusinessSignupProps = req.body;
 
-        if ( !businessName || !ownerName || !ownerIDNumber || !email || !contactNumber || !password ) {
+        if ( !businessName || !registrationNumber || !industry || !password || !owners || !address || !email || !phoneNumber ) {
             return res.status(200).json({ message: "All fields are required."})
         }
         
-        const duplicateID = await BusinessAccount.findOne({ ownerIDNumber : ownerIDNumber }).exec();
-
-        if (duplicateID) return res.status(409).json({ message: `Account With Id; ${ownerIDNumber} already exists.`});
-        if (!isValidID(ownerIDNumber)) return res.status(400).json({ message: "Invalid ID number entered." });
+        const duplicateRegistration = await BusinessAccount.findOne({ registrationNumber : registrationNumber }).exec();
+        if (duplicateRegistration) return res.status(409).json({ message: `Business With Id; ${duplicateRegistration} already exists.`});
 
         const duplicateEmail = await BusinessAccount.findOne({ email: email}).exec();
-        if (duplicateEmail) return res.status(409).json({ message: `Account With email; ${email} already exists.`});
+        if (duplicateEmail) return res.status(409).json({ message: `Business With email; ${email} already exists.`});
 
-        const duplicatePhone = await InvestorAccount.findOne({ contactNumber: contactNumber }).exec();
-        if (duplicatePhone) return res.status(409).json({ "message": `Account With cellphone number; ${contactNumber} already exists.` });
+        const duplicatePhone = await InvestorAccount.findOne({ phoneNumber: phoneNumber }).exec();
+        if (duplicatePhone) return res.status(409).json({ message: `Business With cellphone number; ${phoneNumber} already exists.` });
 
         try {
             const result = await BusinessAccount.create({
                 "businessName": businessName,
-                "ownerName": ownerName,
-                "ownerIDNumber": ownerIDNumber,
+                "registrationNumber": registrationNumber,
+                "industry": industry,
+                "password": await bcrypt.hash(password, 10),
+                "owners": owners,
+                "address": address,
                 "email": email,
-                "contactNumber": contactNumber,
-                "password": await bcrypt.hash(password, 10)
+                "phoneNumber": phoneNumber
             })
-
             res.status(201).json({ message: `Business account has been successfully created for ${businessName}`})
         } catch (error: any) {
             res.status(500).json({ "": error.message, message : "We are having trouble communicationg with the server. Please try again." })
@@ -126,24 +147,20 @@ class AccountsController {
     }
 
     static delete_business_account = async (req: Request, res: Response) => {
-        // Just trying out the logic, I have no idea if this is correct or not lol
-        const { businessId } = req.params;
+        const { businessName, registrationNumber, password }: DeleteBusinessProps = req.body;
 
-        if ( !businessId ) {
-            return res.status(400).json({ message: "Business ID is required."});
-        }
+        if (!businessName || !registrationNumber || !password ) res.status(200).json({message: "All fields are required."})
+        
+        const business = await BusinessAccount.findOne({ businessName : businessName }).exec();
 
-        try {
-            const deletedBusiness = await BusinessAccount.findByIdAndDelete(businessId);
+        if (!business) return res.status(200).json({ message: `Business with the name ${business} was not found.`})
+        
+        if (business.registrationNumber !== registrationNumber) return res.status(401).json({message : 'Incorrect registration number'})
+        
+        const validPassword = await bcrypt.compare(password, business.password)
+        if (!validPassword) return res.status(409).json({message: 'Invalid password.'})
 
-            if (!deletedBusiness) {
-                return res.status(404).json({ message: `Business account with ID ${businessId} was not found.`})
-            }
-
-            return res.status(200).json({ message: "Business account successfully deleted."})
-        } catch (error: any) {
-            return res.status(500).json({ "": error.message, message : "We are having trouble communicationg with the server. Please try again." })
-        }
+        return res.status(200).json({message: 'Account successfully deleted.'})
     }
 
     static update_investor_account = (req: Request, res: Response) => {

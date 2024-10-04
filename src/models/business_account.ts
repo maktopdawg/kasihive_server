@@ -1,79 +1,186 @@
-import mongoose, { Schema, model} from "mongoose";
-import dotenv from "dotenv";
+import mongoose, { Schema, model } from 'mongoose';
 
-dotenv.config();
-
-const BusinessAccountSchema = new Schema({
+const BusinessSchema = new Schema({
+    // Basic business information
     businessName: {
         type: String,
         required: true,
         trim: true
     },
-    ownerName: {
+    registrationNumber: {
         type: String,
-        required: true,
-        trim: true
-    },
-    ownerIDNumber: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    email: {
-        type: String,
-        required: true,
         unique: true,
-        trim: true,
-        lowercase: true
-    },
-    contactNumber: {
-        type: String,
         required: true,
-        unique: true,
         trim: true
     },
+    industry: {
+        type: String,
+        required: true,
+        trim: true // e.g. "Retail", "Agriculture", "Technology"
+    },
+    description: {
+        type: String,
+        required: true,
+        trim: true
+    },
+
+    username: String,
     password: {
         type: String,
         required: true
     },
 
-
-    walletBalance: {
-        type: Number,
-        default: 0.0
-    },
-    investmentsReceived: [
+    owners: [
         {
-            investorId: {
-                type: mongoose.Schema.ObjectId,
-                ref: 'Investor'
-            },
-            investmentId: {
+            name: String,
+            surname: String,
+            idNumber: String
+        }
+    ],
+
+    // Location data
+    address: {
+        street: { 
+            type: String,
+            required: true, 
+            trim: true 
+        },
+        city: { 
+            type: String, 
+            required: true, 
+            trim: true 
+        },
+        province: { 
+            type: String, 
+            required: true, 
+            trim: true 
+        },
+        postalCode: { 
+            type: String, 
+            required: true, 
+            trim: true 
+        }
+    },
+    
+    // Contact information
+    email: {
+        type: String,
+        required: true,
+        trim: true,
+        unique: true,
+        lowercase: true
+    },
+    phoneNumber: {
+        type: String,
+        required: true,
+        trim: true,
+        unique: true
+    },
+
+    websiteUrl: String,
+
+    // KYC and verification documents for business
+    documents: [
+        {
+            documentType: {
                 type: String,
+                enum: [
+                    'BUSINESS REGISTRATION CERTIFICATE',
+                    'TAX CLEARANCE CERTIFICATE',
+                    'PROOF OF ADDRESS',
+                    'BANK STATEMENT',
+                    'BUSINESS LICENSE',
+                    'IDENTITY DOCUMENT'
+                ]
             },
-            amountInvested: {
-                type: Number,
+            documentURL: {
+                type: String,
+                required: true
             },
-            dateInvested: {
+            dateUploaded: {
                 type: Date,
                 default: Date.now
             },
             status: {
                 type: String,
-                enum: ['ACTIVE', 'COMPLETED'],
-                default: 'ACTIVE'
+                enum: ['PENDING', 'APPROVED', 'REJECTED'],
+                default: 'PENDING'
             }
         }
     ],
+
+    totalRaised: {
+        type: Number, // Amount raised from investors so far
+        default: 0.0
+    },
+
+    investmentRounds: [
+        {
+            roundId: {
+                type: String
+            },
+            amount: {
+                type: Number, // Amount raised in this round
+            },
+            dateRaised: {
+                type: Date,
+                default: Date.now
+            },
+            status: {
+                type: String,
+                enum: ['OPEN', 'CLOSED'],
+                default: 'OPEN'
+            }
+        }
+    ],
+
+    // Profit-sharing & investor relations
+    profitSharePercentage: {
+        type: Number, // Percentage of profit shared with investors
+        required: true
+    },
+    
+    investorPayouts: [
+        {
+            investorId: {
+                type: mongoose.Schema.ObjectId,
+                ref: 'Investor',
+                required: true
+            },
+            amountPaid: {
+                type: Number,
+                required: true
+            },
+            datePaid: {
+                type: Date,
+                default: Date.now
+            }
+        }
+    ],
+
+    reviews: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: '',
+        }
+    ],
+
+    // Business status
+    businessStatus: {
+        type: String,
+        enum: ['UNAPPROVED', 'APPROVED', 'VERIFIED', 'SUSPENDED', 'TERMINATED'],
+        default: 'UNAPPROVED'
+    },
+
+    // Date fields
     dateCreated: {
         type: Date,
         default: Date.now
     },
-    accountStatus: {
-        type: String,
-        enum: ['ACTIVE', 'SUSPENDED', 'CLOSED'],
-        default: 'ACTIVE'
+    dateUpdated: {
+        type: Date,
+        default: Date.now
     }
 });
 
-export default model('Business', BusinessAccountSchema);
+export default model('Business', BusinessSchema);
