@@ -202,9 +202,26 @@ class AccountsController {
         }
     }
 
-    static get_all_business_accounts = (req: Request, res: Response) => {
-        
+    static get_all_business_accounts = async (req: Request, res: Response) => {
+        try {
+            // const { query } = req;
+            // const filter = query.filter as string | undefined;
+            // const value = query.value as string | undefined;
+            const { query: { filter, value } } = req;
+            let accounts;
+    
+            if (filter && value) {
+                accounts = await BusinessAccount.find({ [filter]: value });
+            } else { 
+                accounts = await BusinessAccount.find();
+            }
+    
+            res.status(200).json(accounts);
+        } catch (error) {
+            res.status(500).json({ message: "Error fetching business accounts", error });
+        }
     }
+    
 
     static get_investor_account = async (req: Request, res: Response) => {
         if (!req?.params?.username) return res.status(400).json({ "message": "Account username is required." })
