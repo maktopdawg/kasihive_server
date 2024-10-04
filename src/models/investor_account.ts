@@ -1,5 +1,6 @@
 import mongoose, { Schema, model } from "mongoose";
 import dotenv from "dotenv";
+import achievement from "./achievement";
 
 dotenv.config();
 
@@ -57,6 +58,13 @@ const InvestorAccountSchema = new Schema({
                 type: Date,
                 default: Date.now
             }
+        }
+    ],
+    achievements: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'Achievement',
+            required: true
         }
     ],
 
