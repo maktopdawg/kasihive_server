@@ -5,6 +5,7 @@ import bcrypt from "bcrypt"
 import BusinessAccount from "../models/business_account";
 import { generateUsername, isValidID } from "../utils/validationUtils";
 
+
 interface InvestorSignupProps {
     firstName: string
     lastName: string
@@ -16,11 +17,28 @@ interface InvestorSignupProps {
 
 interface BusinessSignupProps {
     businessName: string
-    ownerName: string
-    ownerIDNumber: string
-    email: string
-    contactNumber: string
+    registrationNumber: string
+    industry: string
+    description: string
     password: string
+    owners: OwnerProps[]
+    address: AddressProps
+    email: string
+    phoneNumber: string
+    websiteUrl: string
+}
+
+interface OwnerProps {
+    name: string
+    surname: string
+    idNumber: string
+}
+
+interface AddressProps {
+    street: string
+    city: string
+    province: string
+    postalCode: string
 }
 
 interface DeleteInvestorProps {

@@ -63,4 +63,8 @@ performance; = Array of data on weekly performance => Monday To Sunday
 
 -----------------------
 
-Virtual Wallet
+Virtual Wallet - done
+Investment model - working on it
+Business model - working on it
+Investment option - not done yet
+Withdrawl - not done yet
