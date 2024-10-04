@@ -44,6 +44,21 @@ const InvestorAccountSchema = new Schema({
         type: String,
         required: true
     }, 
+    profileImage: String,
+
+    documents: [
+        {
+            documentType: {
+                type: String, // e.g. "ID", "Proof of Address"
+                enum: ['ID', 'PROOF OF RESIDENCE', 'PROOF OF BANK ACCOUNT', 'PASSPORT', 'DRIVER\'S LICENSE', 'BANK STATEMENT', 'PAYSLIP']
+            },
+            documnetURL: String,
+            dateUploaded: {
+                type: Date,
+                default: Date.now
+            }
+        }
+    ],
 
     // Wallet
     walletBalance: {
@@ -85,8 +100,8 @@ const InvestorAccountSchema = new Schema({
     },
     profileStatus: {
         type: String,
-        enum: ['VERIFIED', 'UNVERIFIED', 'SUSPENDED', 'TERMINATED'],
-        default: 'UNVERIFIED'
+        enum: ['UNAPPROVED', 'APPROVED', 'VERIFIED', 'UNVERIFIED', 'SUSPENDED', 'TERMINATED'],
+        default: 'UNAPPROVED'
     },
     rank: {
         type: Number,

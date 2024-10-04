@@ -29,6 +29,10 @@ interface DeleteInvestorProps {
     password: string
 }
 
+interface UpdateInvestorProps {
+    phoneNumber: string
+}
+
 class AccountsController {
     static create_investor_account = async (req: Request, res: Response) => {
         const { firstName, lastName, identityNumber, email, phoneNumber, password }: InvestorSignupProps = req.body;
@@ -109,7 +113,7 @@ class AccountsController {
 
         const account = await InvestorAccount.findOne({ username: username }).exec();
 
-        if (!account) return res.status(204).json({ "message": `Account with username ${username} not found.` })
+        if (!account) return res.status(200).json({ "message": `Account with username ${username} not found.` })
         
         if (account.identityNumber !== identityNumber) return res.status(401).json({ "message": "Incorrect ID." })
 
@@ -146,25 +150,97 @@ class AccountsController {
         
     }
 
+    static update_investor_password = async (req: Request, res: Response) => {
+        const { username, current_password, new_password }: UpdatePasswordProps = req.body;
+
+        if (!username || !current_password || !new_password) return res.status(200).json({ "message": "All fields are required." })
+
+        const account = await InvestorAccount.findOne({ username: username }).exec()
+
+        if (!account) return res.status(200).json({ "message": `Account with username ${username} not found.` })
+
+        const validPassword = await bcrypt.compare(current_password, account.password);
+        if (!validPassword) return res.status(409).json({ "message": "Invalid Password." })
+
+        account.password = await bcrypt.hash(new_password, 10)
+
+        await account.save()
+
+        return res.status(409).json({ "message": "Password updated successfully." })
+    }
+
     static update_business_account = (req: Request, res: Response) => {
         
     }
 
-    static get_all_investor_accounts = (req: Request, res: Response) => {
-        
+    static get_all_investor_accounts = async (req: Request, res: Response) => {
+        const { query: { filter, value } } = req;
+
+        if (!filter && !value) {
+            // Render all investor accounts
+            const accounts = await InvestorAccount.find();
+            console.log(accounts)
+            if (!accounts) return res.status(204).json({ "message": "No investor accounts found." })
+            res.status(200).json(accounts)
+        }
     }
 
     static get_all_business_accounts = (req: Request, res: Response) => {
         
     }
 
-    static get_investor_account = (req: Request, res: Response) => {
-        
+    static get_investor_account = async (req: Request, res: Response) => {
+        if (!req?.params?.username) return res.status(400).json({ "message": "Account username is required." })
+        const username: string = req.params.username;
+        const account = await InvestorAccount.findOne({ username: username }).exec();
+        if (!account) return res.status(200).json({ "message": `Account with username ${username} not found.` })
+        return res.status(200).json(account)
     }
 
     static get_business_account = (req: Request, res: Response) => {
         
     }
+
+    static upload_investor_document = (req: Request, res: Response, f: FormData) => {
+        
+    }
+
+    static change_investor_profile_status = async (req: Request, res: Response) => {
+        const username = req?.params?.username;
+        const { query: { filter, value } } = req;
+
+        console.log(filter)
+        console.log(value)
+
+        if (!filter && !value) return res.status(200).json({ "message": "Filter and value required." })
+
+        if (!username) return res.status(200).json({ "message": "Username required." })
+
+        const account = await InvestorAccount.findOne({ username: username }).exec();
+
+        if (!account) return res.status(200).json({ "message": `Account with username ${username} not found.` })
+
+        if (filter !== undefined) {
+            account.profileStatus = filter.toString().toUpperCase() as "APPROVED" | "UNAPPROVED" | 'VERIFIED' | 'UNVERIFIED' | 'SUSPENDED' | 'TERMINATED';
+
+            await account.save();
+
+            return res.status(200).json({ "message": `${username}'s account has been approved.` })
+        }
+
+        return res.status(500).json({ "message": "Error" })
+    }
+}
+
+interface UpdatePasswordProps {
+    username: string
+    current_password: string
+    new_password: string
+}
+
+interface UploadInvestorDoc {
+    documentType: string
+    document: File
 }
 
 export default AccountsController;
