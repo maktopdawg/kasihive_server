@@ -147,7 +147,7 @@ class AccountsController {
     }
 
     static update_investor_account = (req: Request, res: Response) => {
-        
+    
     }
 
     static update_investor_password = async (req: Request, res: Response) => {
