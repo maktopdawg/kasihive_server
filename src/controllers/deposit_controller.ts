@@ -30,6 +30,26 @@ class DepositController {
         }
     }
 
+    static get_deposit = async (req: Request, res: Response) => {
+        const { id } = req.params;
+
+        if ( !id ){
+            return res.status(400).json({message: "Deposit id is required."})
+        }
+        try {
+            const result = await deposit.findById(id);
+
+            if (!result) {
+                return res.status(404).json({ message: "Deposit record is not found"})
+            }
+
+            res.status(200).json(result)
+
+        } catch(error:any) {
+            res.status(500).json({ error: error.message, message: 'Error retrieving performance record'});
+        }
+    }
+
 } 
 
 export default DepositController;
