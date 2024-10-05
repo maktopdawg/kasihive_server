@@ -65,7 +65,7 @@ class PerformanceController {
 
     }
 
-    static get_all_performances = async (req: Request, res: Response) => {
+    static get_all_performances = async (res: Response) => {
         try {
             const performances = await PerformanceModel.find();
             res.status(200).json(performances);
@@ -96,7 +96,7 @@ class PerformanceController {
             res.status(500).json({ error: error.message, message: 'Error retrieving performance record' });
         }
     }
-    
+
 }
 
 export default PerformanceController;
