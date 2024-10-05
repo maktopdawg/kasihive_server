@@ -6,5 +6,5 @@ const router: Router = Router();
 router.post('/investment-options/create', InvestorOptionController.create_investment_option);
 router.get('/investment-options', InvestorOptionController.get_all_investment_options);
 router.get('/investment-option/:id', InvestorOptionController.get_investment_options);
-
+router.delete('/investment-option/:id', InvestorOptionController.delete_investment_options);
 export default router;

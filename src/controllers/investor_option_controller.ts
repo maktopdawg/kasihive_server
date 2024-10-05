@@ -81,6 +81,26 @@ class InvestorOptionController {
             res.status(500).json({ error: error.message, message: 'Error retrieving investment option' });
         }
     }
+
+    static delete_investment_options = async (req: Request, res: Response) => {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ message: 'Investment Option ID is required' });
+        }
+
+        try {
+            const deletedPerformance = await InvestmentOption.findByIdAndDelete(id);
+
+            if (!deletedPerformance) {
+                return res.status(404).json({ message: 'Performance record not found' });
+            }
+
+            res.status(200).json({ message: 'Performance record deleted successfully', deletedId: id });
+        } catch (error: any) {
+            res.status(500).json({ error: error.message, message: 'Error deleting performance record' });
+        }
+    }
 }
 
 export default InvestorOptionController;
