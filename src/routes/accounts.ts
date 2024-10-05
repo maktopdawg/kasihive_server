@@ -3,7 +3,7 @@ import AccountsController from "../controllers/accounts_controller";
 
 const router: Router = Router();
 
-router.post( "/accounts/new-investor-account", AccountsController.create_investor_account )
+router.post( "/account/investor/register", AccountsController.create_investor_account )
 router.delete( "/accounts/delete-investor-account", AccountsController.delete_investor_account )
 router.post( "/accounts/new-business-account", AccountsController.create_business_account )
 router.delete( "/business/delete/delete-business-account", AccountsController.delete_business_account )

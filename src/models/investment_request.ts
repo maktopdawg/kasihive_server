@@ -4,9 +4,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const InvestmentRequestSchema = new Schema({
-    business: {
+    businessId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Business',
+        ref: 'Investor',
         required: true
     },
     nameOfInvestment: {
@@ -42,15 +42,18 @@ const InvestmentRequestSchema = new Schema({
     investors: [{
         investor: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Investor'
+          ref: 'VirtualWallet'
         },
-        username: String,
-        amountInvested: Number,
         dateInvested: {
           type: Date,
           default: Date.now
         }
     }],
+    risk: {
+        type: String,
+        enum: ['LOW', 'MEDIUM', 'HIGH'],
+        required: true
+    },
     status: {
         type: String,
         enum: ['OPEN', 'CLOSED'],
