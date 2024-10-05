@@ -65,7 +65,7 @@ class PerformanceController {
 
     }
 
-    static get_all_performances = async (res: Response) => {
+    static get_all_performances = async (req: Request, res: Response) => {
         try {
             const performances = await PerformanceModel.find();
             res.status(200).json(performances);
