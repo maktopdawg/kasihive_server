@@ -6,6 +6,7 @@ import virtualWalletRouter from "./virtual_wallet";
 import InvestmentRouter from "./investment";
 import performanceRouter from "./performanceRoutes"; 
 import optionsRouter from "./investorOptionRoutes";
+import depositRouter from "./depositRoutes";
 
 const router: Router = Router();
 
@@ -15,5 +16,6 @@ router.use(investmentRequestRouter);
 router.use(virtualWalletRouter);
 router.use(InvestmentRouter);
 router.use(optionsRouter);
+router.use(depositRouter);
 
 export default router;
