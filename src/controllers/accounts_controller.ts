@@ -94,6 +94,7 @@ class AccountsController {
         }
     }
 
+    // Tested and Working
     static create_business_account = async (req: Request, res: Response) => {
         const { businessName, registrationNumber, industry, password, owners, address, email, phoneNumber, websiteUrl }: BusinessSignupProps = req.body;
 
@@ -146,6 +147,7 @@ class AccountsController {
         return res.status(200).json({ "message": "Account successfully deleted." })
     }
 
+    // Tested and Working
     static delete_business_account = async (req: Request, res: Response) => {
         const { businessName, registrationNumber, password }: DeleteBusinessProps = req.body;
 
@@ -159,6 +161,8 @@ class AccountsController {
         
         const validPassword = await bcrypt.compare(password, business.password)
         if (!validPassword) return res.status(409).json({message: 'Invalid password.'})
+
+        const result = await business.deleteOne({ _id: business._id });
 
         return res.status(200).json({message: 'Account successfully deleted.'})
     }
@@ -202,9 +206,26 @@ class AccountsController {
         }
     }
 
-    static get_all_business_accounts = (req: Request, res: Response) => {
-        
+    // Tested and Working
+    static get_all_business_accounts = async (req: Request, res: Response) => {
+        try {
+            const { query } = req;
+            const filter = query.filter as string | undefined;
+            const value = query.value as string | undefined;
+            let accounts;
+    
+            if (filter && value) {
+                accounts = await BusinessAccount.find({ [filter]: value });
+            } else { 
+                accounts = await BusinessAccount.find();
+            }
+
+            res.status(200).json(accounts);
+        } catch (error) {
+            res.status(500).json({ message: "Error fetching business accounts", error });
+        }
     }
+    
 
     static get_investor_account = async (req: Request, res: Response) => {
         if (!req?.params?.username) return res.status(400).json({ "message": "Account username is required." })
@@ -214,8 +235,13 @@ class AccountsController {
         return res.status(200).json(account)
     }
 
-    static get_business_account = (req: Request, res: Response) => {
-        
+    // Tested and Working
+    static get_business_account = async (req: Request, res: Response) => {
+        if (!req?.params?.id) return res.status(400).json({ message: "Account ID is required." })
+        const id: string = req.params.id;
+        const business = await BusinessAccount.findOne({ _id: id }).exec();
+        if (!business) return res.status(200).json({ message: `Business with id ${id} not found.`})
+        return res.status(200).json(business)
     }
 
     static upload_investor_document = (req: Request, res: Response, f: FormData) => {

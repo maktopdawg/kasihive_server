@@ -9,11 +9,6 @@ const VirtualWalletSchema = new Schema({
         ref: 'Investor',
         required: true
     },
-    business: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Business',
-        required: true
-    },
     investmentRequest: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'InvestmentRequest',
@@ -29,4 +24,4 @@ const VirtualWalletSchema = new Schema({
     }
 });
 
-export default model('VirtualAccount', VirtualWalletSchema)
+export default model('VirtualWallet', VirtualWalletSchema)

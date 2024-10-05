@@ -13,6 +13,10 @@ const InvestmentSchema = new Schema({
         type: String,
         required: true
     },
+    investor: {
+        type: String,
+        required: true
+    },
     dateInvested: {
         type: Date,
         default: Date.now

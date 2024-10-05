@@ -10,7 +10,6 @@ const BusinessSchema = new Schema({
     registrationNumber: {
         type: String,
         unique: true,
-        required: true,
         trim: true
     },
     industry: {
@@ -20,7 +19,7 @@ const BusinessSchema = new Schema({
     },
     description: {
         type: String,
-        required: true,
+        // required: true,
         trim: true
     },
 
@@ -137,7 +136,7 @@ const BusinessSchema = new Schema({
     // Profit-sharing & investor relations
     profitSharePercentage: {
         type: Number, // Percentage of profit shared with investors
-        required: true
+        // required: true
     },
     
     investorPayouts: [
