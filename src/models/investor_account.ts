@@ -78,27 +78,7 @@ const InvestorAccountSchema = new Schema({
         {
             businessId: {
                 type: mongoose.Schema.ObjectId,
-                ref: "Business"
-            },
-            investmentId: {
-                type: String,
-            },
-            amountInvested: {
-                type: Number,
-            },
-            dateInvested: {
-                type: Date,
-                default: Date.now
-            },
-            dateClosed: {
-                type: Date
-            },
-            status: {
-                enum: ['OPEN', 'CLOSED']
-            }, 
-            returns: {
-                type: Number,
-                default: 0.0
+                ref: "Investment"
             }
         }
     ],
