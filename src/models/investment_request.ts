@@ -42,10 +42,8 @@ const InvestmentRequestSchema = new Schema({
     investors: [{
         investor: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Investor'
+          ref: 'VirtualWallet'
         },
-        username: String,
-        amountInvested: Number,
         dateInvested: {
           type: Date,
           default: Date.now
