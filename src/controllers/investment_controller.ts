@@ -44,6 +44,14 @@ class InvestmentController {
             return res.status(500).json({ "message": "Internal Server Error." });
         }
     }
+
+    static get_investment = async (req: Request, res: Response) => {
+
+    }
+
+    static update_investment_status = async (req: Request, res: Response) => {
+        
+    }
 }
 
 export default InvestmentController;
