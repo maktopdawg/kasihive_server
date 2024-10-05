@@ -13,7 +13,7 @@ const InvestmentOptionsSchema = new Schema({
         type: String,
         enum: ["SINGLE_BUSINESS_EQUITY", "BASKET", "POOL"]
     },
-    minInvesment: {
+    minInvestment: {
         type: Number,
         required: true,
         min: 0
