@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import connectDB from "./configurations/connection";
 import mongoose from "mongoose";
 import routes from "./routes/index"
+import { corsOptions } from "./configurations/cors";
+import cors from "cors"
 
 dotenv.config();
 
@@ -10,6 +12,8 @@ connectDB();
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
+
+app.use( cors(corsOptions) )
 
 app.use(  express.json( {
   limit: "100mb"
