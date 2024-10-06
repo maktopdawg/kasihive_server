@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon src/server.ts"
+    "dev": "nodemon src/server.ts",
+    "heroku-postbuild": "npm run build"
   },
   "keywords": [],
   "author": "",
@@ -33,5 +34,8 @@
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }
