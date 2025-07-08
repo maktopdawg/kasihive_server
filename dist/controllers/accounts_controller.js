@@ -23,7 +23,7 @@ _a = AccountsController;
 AccountsController.create_investor_account = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { firstName, lastName, identityNumber, email, phoneNumber, password } = req.body;
     if (!firstName || !lastName || !identityNumber || !email || !phoneNumber || !password) {
-        return res.status(200).json({ "message": "All fields are required." });
+        return res.status(400).json({ "message": "All fields are required." });
     }
     if (!(0, validationUtils_1.isValidID)(identityNumber.toString()))
         return res.status(400).json({ "message": `ID number invalid` });
@@ -56,7 +56,7 @@ AccountsController.create_investor_account = (req, res) => __awaiter(void 0, voi
 AccountsController.create_business_account = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { businessName, registrationNumber, industry, password, owners, address, email, phoneNumber, websiteUrl } = req.body;
     if (!businessName || !registrationNumber || !industry || !password || !owners || !address || !email || !phoneNumber) {
-        return res.status(200).json({ message: "All fields are required." });
+        return res.status(400).json({ message: "All fields are required." });
     }
     const duplicateRegistration = yield business_account_1.default.findOne({ registrationNumber: registrationNumber }).exec();
     if (duplicateRegistration)
@@ -87,10 +87,10 @@ AccountsController.create_business_account = (req, res) => __awaiter(void 0, voi
 AccountsController.delete_investor_account = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, identityNumber, password } = req.body;
     if (!username || !identityNumber || !password)
-        res.status(200).json({ "message": "All fields are required." });
+        return res.status(400).json({ "message": "All fields are required." });
     const account = yield investor_account_1.default.findOne({ username: username }).exec();
     if (!account)
-        return res.status(200).json({ "message": `Account with username ${username} not found.` });
+        return res.status(404).json({ "message": `Account with username ${username} not found.` });
     if (account.identityNumber !== identityNumber)
         return res.status(401).json({ "message": "Incorrect ID." });
     const validPassword = yield bcrypt_1.default.compare(password, account.password);
@@ -103,10 +103,10 @@ AccountsController.delete_investor_account = (req, res) => __awaiter(void 0, voi
 AccountsController.delete_business_account = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { businessName, registrationNumber, password } = req.body;
     if (!businessName || !registrationNumber || !password)
-        res.status(200).json({ message: "All fields are required." });
+        return res.status(400).json({ message: "All fields are required." });
     const business = yield business_account_1.default.findOne({ businessName: businessName }).exec();
     if (!business)
-        return res.status(200).json({ message: `Business with the name ${business} was not found.` });
+        return res.status(404).json({ message: `Business with the name ${businessName} was not found.` });
     if (business.registrationNumber !== registrationNumber)
         return res.status(401).json({ message: 'Incorrect registration number' });
     const validPassword = yield bcrypt_1.default.compare(password, business.password);
@@ -120,10 +120,10 @@ AccountsController.update_investor_account = (req, res) => {
 AccountsController.update_investor_password = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, current_password, new_password } = req.body;
     if (!username || !current_password || !new_password)
-        return res.status(200).json({ "message": "All fields are required." });
+        return res.status(400).json({ "message": "All fields are required." });
     const account = yield investor_account_1.default.findOne({ username: username }).exec();
     if (!account)
-        return res.status(200).json({ "message": `Account with username ${username} not found.` });
+        return res.status(404).json({ "message": `Account with username ${username} not found.` });
     const validPassword = yield bcrypt_1.default.compare(current_password, account.password);
     if (!validPassword)
         return res.status(409).json({ "message": "Invalid Password." });
@@ -138,7 +138,6 @@ AccountsController.get_all_investor_accounts = (req, res) => __awaiter(void 0, v
     if (!filter && !value) {
         // Render all investor accounts
         const accounts = yield investor_account_1.default.find();
-        console.log(accounts);
         if (!accounts)
             return res.status(204).json({ "message": "No investor accounts found." });
         res.status(200).json(accounts);
@@ -170,7 +169,7 @@ AccountsController.get_investor_account = (req, res) => __awaiter(void 0, void 0
     const username = req.params.username;
     const account = yield investor_account_1.default.findOne({ username: username }).exec();
     if (!account)
-        return res.status(200).json({ "message": `Account with username ${username} not found.` });
+        return res.status(404).json({ "message": `Account with username ${username} not found.` });
     return res.status(200).json(account);
 });
 // Tested and Working
@@ -181,7 +180,7 @@ AccountsController.get_business_account = (req, res) => __awaiter(void 0, void 0
     const id = req.params.id;
     const business = yield business_account_1.default.findOne({ _id: id }).exec();
     if (!business)
-        return res.status(200).json({ message: `Business with id ${id} not found.` });
+        return res.status(404).json({ message: `Business with id ${id} not found.` });
     return res.status(200).json(business);
 });
 AccountsController.upload_investor_document = (req, res, f) => {

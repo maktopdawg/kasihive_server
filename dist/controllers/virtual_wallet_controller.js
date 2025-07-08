@@ -38,7 +38,6 @@ VirtualWalletController.get_virtual_wallet = (req, res) => __awaiter(void 0, voi
         return res.status(200).json(virtual_wallet);
     }
     catch (error) {
-        console.log(error.message);
         return res.status(404).json({ "message": "Virtual Wallet Not Found." });
     }
 });

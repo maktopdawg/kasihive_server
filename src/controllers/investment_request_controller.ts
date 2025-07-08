@@ -47,8 +47,7 @@ class InvestmentRequestController {
                 return res.status(400).json({ "message": `Can't open more than ${MAX_INVESTMENT_REQUESTS} investment requests.` })
             }
         } catch (error: any) {
-            console.log(error.message)
-            return res.status(500).json({ "message": "Internal Server Error." })
+            return res.status(500).json({ "message": "Internal Server Error.", error: error.message })
         }
     }
 

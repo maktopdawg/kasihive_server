@@ -47,8 +47,7 @@ InvestmentRequestController.open_investment_request = (req, res) => __awaiter(vo
         }
     }
     catch (error) {
-        console.log(error.message);
-        return res.status(500).json({ "message": "Internal Server Error." });
+        return res.status(500).json({ "message": "Internal Server Error.", error: error.message });
     }
 });
 InvestmentRequestController.get_all_investment_request = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -60,7 +60,7 @@ class AccountsController {
         const { firstName, lastName, identityNumber, email, phoneNumber, password }: InvestorSignupProps = req.body;
 
         if (!firstName || !lastName || !identityNumber || !email || !phoneNumber || !password ) {
-            return res.status(200).json({ "message": "All fields are required." })
+            return res.status(400).json({ "message": "All fields are required." })
         }
 
         if (!isValidID(identityNumber.toString())) return res.status(400).json({ "message": `ID number invalid` })
@@ -99,7 +99,7 @@ class AccountsController {
         const { businessName, registrationNumber, industry, password, owners, address, email, phoneNumber, websiteUrl }: BusinessSignupProps = req.body;
 
         if ( !businessName || !registrationNumber || !industry || !password || !owners || !address || !email || !phoneNumber ) {
-            return res.status(200).json({ message: "All fields are required."})
+            return res.status(400).json({ message: "All fields are required."})
         }
         
         const duplicateRegistration = await BusinessAccount.findOne({ registrationNumber : registrationNumber }).exec();
@@ -131,11 +131,11 @@ class AccountsController {
     static delete_investor_account = async (req: Request, res: Response) => {
         const { username, identityNumber, password }: DeleteInvestorProps = req.body;
 
-        if (!username || !identityNumber || !password) res.status(200).json({ "message": "All fields are required." })
+        if (!username || !identityNumber || !password) return res.status(400).json({ "message": "All fields are required." })
 
         const account = await InvestorAccount.findOne({ username: username }).exec();
 
-        if (!account) return res.status(200).json({ "message": `Account with username ${username} not found.` })
+        if (!account) return res.status(404).json({ "message": `Account with username ${username} not found.` })
         
         if (account.identityNumber !== identityNumber) return res.status(401).json({ "message": "Incorrect ID." })
 
@@ -151,11 +151,11 @@ class AccountsController {
     static delete_business_account = async (req: Request, res: Response) => {
         const { businessName, registrationNumber, password }: DeleteBusinessProps = req.body;
 
-        if (!businessName || !registrationNumber || !password ) res.status(200).json({message: "All fields are required."})
+        if (!businessName || !registrationNumber || !password ) return res.status(400).json({message: "All fields are required."})
         
         const business = await BusinessAccount.findOne({ businessName : businessName }).exec();
 
-        if (!business) return res.status(200).json({ message: `Business with the name ${business} was not found.`})
+        if (!business) return res.status(404).json({ message: `Business with the name ${businessName} was not found.`})
         
         if (business.registrationNumber !== registrationNumber) return res.status(401).json({message : 'Incorrect registration number'})
         
@@ -174,11 +174,11 @@ class AccountsController {
     static update_investor_password = async (req: Request, res: Response) => {
         const { username, current_password, new_password }: UpdatePasswordProps = req.body;
 
-        if (!username || !current_password || !new_password) return res.status(200).json({ "message": "All fields are required." })
+        if (!username || !current_password || !new_password) return res.status(400).json({ "message": "All fields are required." })
 
         const account = await InvestorAccount.findOne({ username: username }).exec()
 
-        if (!account) return res.status(200).json({ "message": `Account with username ${username} not found.` })
+        if (!account) return res.status(404).json({ "message": `Account with username ${username} not found.` })
 
         const validPassword = await bcrypt.compare(current_password, account.password);
         if (!validPassword) return res.status(409).json({ "message": "Invalid Password." })
@@ -200,7 +200,6 @@ class AccountsController {
         if (!filter && !value) {
             // Render all investor accounts
             const accounts = await InvestorAccount.find();
-            console.log(accounts)
             if (!accounts) return res.status(204).json({ "message": "No investor accounts found." })
             res.status(200).json(accounts)
         }
@@ -231,7 +230,7 @@ class AccountsController {
         if (!req?.params?.username) return res.status(400).json({ "message": "Account username is required." })
         const username: string = req.params.username;
         const account = await InvestorAccount.findOne({ username: username }).exec();
-        if (!account) return res.status(200).json({ "message": `Account with username ${username} not found.` })
+        if (!account) return res.status(404).json({ "message": `Account with username ${username} not found.` })
         return res.status(200).json(account)
     }
 
@@ -240,7 +239,7 @@ class AccountsController {
         if (!req?.params?.id) return res.status(400).json({ message: "Account ID is required." })
         const id: string = req.params.id;
         const business = await BusinessAccount.findOne({ _id: id }).exec();
-        if (!business) return res.status(200).json({ message: `Business with id ${id} not found.`})
+        if (!business) return res.status(404).json({ message: `Business with id ${id} not found.`})
         return res.status(200).json(business)
     }
 
