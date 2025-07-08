@@ -20,7 +20,7 @@ _a = PerformanceController;
 PerformanceController.create_performance = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { businessId, financialMetrics, performanceIndicators, status } = req.body;
     if (!businessId || !financialMetrics || !performanceIndicators || !status) {
-        return res.status(200).json({ message: 'All fields are required.' });
+        return res.status(400).json({ message: 'All fields are required.' });
     }
     try {
         const result = yield performance_model_1.default.create({

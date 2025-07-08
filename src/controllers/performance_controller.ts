@@ -27,7 +27,7 @@ class PerformanceController {
         const { businessId, financialMetrics, performanceIndicators, status }: PerformanceProps = req.body;
 
         if ( !businessId || !financialMetrics || !performanceIndicators || !status ) {
-            return res.status(200).json({ message : 'All fields are required.'})
+            return res.status(400).json({ message : 'All fields are required.'})
         }
 
         try {

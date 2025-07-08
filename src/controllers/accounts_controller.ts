@@ -252,16 +252,13 @@ class AccountsController {
         const username = req?.params?.username;
         const { query: { filter, value } } = req;
 
-        console.log(filter)
-        console.log(value)
+        if (!filter && !value) return res.status(400).json({ "message": "Filter and value required." })
 
-        if (!filter && !value) return res.status(200).json({ "message": "Filter and value required." })
-
-        if (!username) return res.status(200).json({ "message": "Username required." })
+        if (!username) return res.status(400).json({ "message": "Username required." })
 
         const account = await InvestorAccount.findOne({ username: username }).exec();
 
-        if (!account) return res.status(200).json({ "message": `Account with username ${username} not found.` })
+        if (!account) return res.status(404).json({ "message": `Account with username ${username} not found.` })
 
         if (filter !== undefined) {
             account.profileStatus = filter.toString().toUpperCase() as "APPROVED" | "UNAPPROVED" | 'VERIFIED' | 'UNVERIFIED' | 'SUSPENDED' | 'TERMINATED';

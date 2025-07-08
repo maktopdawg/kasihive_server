@@ -77,7 +77,7 @@ const InvestorAccountSchema = new mongoose_1.Schema({
                 type: String, // e.g. "ID", "Proof of Address"
                 enum: ['ID', 'PROOF OF RESIDENCE', 'PROOF OF BANK ACCOUNT', 'PASSPORT', 'DRIVER\'S LICENSE', 'BANK STATEMENT', 'PAYSLIP']
             },
-            documnetURL: String,
+            documentURL: String,
             dateUploaded: {
                 type: Date,
                 default: Date.now
