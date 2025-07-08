@@ -8,10 +8,13 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const connection_1 = __importDefault(require("./configurations/connection"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const index_1 = __importDefault(require("./routes/index"));
+const cors_1 = require("./configurations/cors");
+const cors_2 = __importDefault(require("cors"));
 dotenv_1.default.config();
 (0, connection_1.default)();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
+app.use((0, cors_2.default)(cors_1.corsOptions));
 app.use(express_1.default.json({
     limit: "100mb"
 }));
